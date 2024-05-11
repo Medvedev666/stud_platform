@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} {% endblock title %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 p-0">
+        <div class="card">
+            <p class="form-title">Отчет</p>
+            <div class="p-3">Средний балл: {{ball}}<br>
+                {% if not user.is_student %}
+                <form method="GET">
+                    <label for="exercise">Выберите предмет:</label>
+                    <select id="exercise" name="exercise">
+                        {% for exercise in exercises %}
+                        <option value="{{ exercise }}">{{ exercise }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button class="btn btn-outline-primary" type="submit">Поиск</button>
+                </form>
+                {% endif %}
+            </div>
+
+
+            <table class="table table-light">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Задание</th>
+                        <th>Студент</th>
+                        <th>Дата выполнения</th>
+                        <th>Оценка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for program in tasks %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a class="a-list" href="{{ program.get_absolute_url }}">
+                                {{ program.exercise.title}}</a></td>
+                        <td>{{ program.student.get_full_name }} </td>
+                        <td>{{ program.updated_date }} </td>
+                        <td>{{ program.mark }} </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

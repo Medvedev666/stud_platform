@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Результат для поиска: {{ query }} {% endblock title %}
+
+{% load class_name %}
+
+{% block content %}
+
+<div id="input-nav" class="p-3">
+    <p class="text-muted m-0">{{ count }} результатов для <b><em class="text-orange"> {{ query }}</em></b></p>
+</div>
+<br><br>
+
+<style>
+    .session-wrapper{position: relative;}
+    .session{position: absolute; top: -15px; right: 25px; z-index: 2;}
+    .br-orange{border: 1px solid #fd7e14; border-radius: 7px;}
+    .class-item {
+        display: block;
+        border-left: 4px solid #6cbd45; 
+        padding: 1rem !important;
+        background: #f8f9fa;
+        border-radius: 3px;
+        box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+        transition: .5s;
+    }
+    .class-item p{padding: 2px; margin: 0; color: #b4b4b4; transition: .5s;}
+    .class-item a{padding: 2px; color: #343a40; text-decoration: none; transition: .5s;}
+    .class-item:hover{
+        transform: translateX(15px);
+        background: #6cbd45;
+    }
+    .class-item:hover h4 a {
+      color: #fff; }
+    .class-item:hover p, .class-item:hover span {
+      color: rgb(158, 239, 119); 
+    }
+</style>
+
+<div class="card p-3" style="box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3); border-radius: 10px;">
+    <h4 class="text-muted m-0">{{ count }} результатов для <b><em class="text-orange"> {{ query }}</em></b></h4>
+    <hr>
+    {% for object in object_list %}
+        {% with object|class_name as klass %}
+        {% if klass == 'Group' %}
+            <div class="session-wrapper">
+                <div class="session"><div class="info-text bg-orange">Группа</div></div>
+            </div>
+            <div class='col-12 class-item'>
+                <!-- <p><b>Program of</b> {{ object }}</p> -->
+                <h4><a href='{{ object.get_absolute_url }}'><b>{{ object.title}}</b></a></h4>
+                <p>{{ object.summary }}</p>
+            </div><hr>
+
+        {% elif klass == 'Course' %}
+            <div class='col-12 class-item'>
+                <p><b>Программа</b> {{ object.group }}</p>
+                <h4><a href='{{ object.get_absolute_url }}'><b>{{ object }}</b></a></h4>
+                <p>{{ object.summary }}</p>
+            </div><hr>
+
+        {% else %}
+            <div class="session-wrapper">
+                <div class="session"><div class="info-text bg-orange">Группа</div></div>
+            </div>
+            <div class='col-12 col-lg-8 offset-lg-4'>
+                <a href='{{ object.get_absolute_url }}' class="class-item d-flex">{{ object }} | {{ object|class_name }}</a>
+            </div><hr>
+            <div class='col-12 class-item'>
+                <h4><a href='{{ object.get_absolute_url }}'>{{ object }} | <b>{{ object|class_name }}</b></a></h4>
+                <p>{{ object.description }}</p>
+            </div><hr>
+        {% endif %}
+
+        {% endwith %}
+
+{% empty %}
+
+<div class='row'>
+    <div class="col-12 text-center"><p><i class="far fa-frown fa-2x"></i> Не найдено результатов</p></div>
+    <div class='col-12 col-md-6 mx-auto my-5 py-5'>
+    <form method='GET' class='' action='.'>
+    
+        <div class="input-group form-group-no-border mx-auto" style="margin-bottom: 0px; font-size: 32px;">
+            <input type="text" name="q" data-toggle="popover" data-placement="bottom" data-content="Press enter to search" class="form-control cfe-nav mt-0 py-3" placeholder="Search..." value="{{ request.GET.q }}" data-original-title="" title="" autofocus="autofocus" required>
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </span>
+        </div>
+
+    </form>
+
+    </div>
+    <div class="col-12 pl-5">
+    <h5>Для поиска:</h5>
+    <ul class="pl-3">
+        <li>Группа <span class="text-orange">></span> Заголовок или описание</li>
+        <li>Предмет <span class="text-orange">></span> Заголовок, код или описание</li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    </div>
+</div>
+
+{% endfor %}
+</div>
+
+{% endblock content %}

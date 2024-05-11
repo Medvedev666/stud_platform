@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock title %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a> Панель администратора</div>
+<!-- <br> -->
+<div class="title-1"><i class="fas fa-user-tie"></i>Панель администратора</div>
+<br>
+<br>
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>{{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>{{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="admin-panel">
+    <div class="row">
+        <div class="col-md-6 p-5 bg-gradient-light">
+            Управление<a class="btn btn-sm btn-secondary" href="{% url 'lecturer_list' %}"> Преподаватели &raquo;</a>
+            <p><span>&LongRightArrow;</span> CRUD (Create, Retriev, Update & Delete) для преподавателей</p><hr>
+            Управление<a class="btn btn-sm btn-secondary" href="{% url 'student_list' %}"> Студенты &raquo;</a>
+            <p><span>&LongRightArrow;</span> CRUD (Create, Retriev, Update & Delete) для студентов</p><hr>
+        </div>
+        <div class="col-md-6 p-5 bg-gradient-light">
+            Управление<a class="btn btn-sm btn-secondary" href="{% url 'groups' %}"> Группы и предметы &raquo;</a>
+            <p><span>&LongRightArrow;</span> CRUD (Create, Retriev, Update & Delete) Группы</p>
+            <p><span>&LongRightArrow;</span> CRUD (Create, Retriev, Update & Delete) Предметы</p><hr>
+            Управление<a class="btn btn-sm btn-secondary" href="{% url 'course_allocation_view' %}"> Распределение курсов &raquo;</a>
+            <p><span>&LongRightArrow;</span> CRUD (Create, Retriev, Update & Delete) распределение курсов</p><hr>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

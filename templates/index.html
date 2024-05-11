@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock title %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <div id="input-nav" class="p-2">Главная</div>
+
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i>{{ message }}
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>{{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <style>
+        .color-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        .bg-purple {
+            background-color: #6f42c1;
+        }
+    </style>
+
+    <div class="title-1">Уведомления</div>
+
+    <style>
+        .card-header-ne {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header-ne .title {
+            vertical-align: middle;
+        }
+    </style>
+    
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <p class="form-title m-0"></p>
+            <div class="table-responsive">
+                <table class="table table-shadow table-light table-striped m-0">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {% if user.is_student %}
+                            <th>Преподаватель</th>
+                            {% else %}
+                            <th>Студент</th>
+                            {% endif %}
+                            <th>Уведомление</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in notif %}
+                        <tr>
+                            {% if n.is_viewed %}
+                            <td></td>
+                            {% else %}
+                            <td style="color: green;">New!</td>
+                            {% endif %}
+                            <td>{{ n.notif_user.get_full_name }}</td>
+                            <td>{{ n.messages }}</td>
+                            {% if not n.is_viewed %}
+                            <td><a href="{% url 'mark_notification_as_viewed' notification_id=n.pk %}">Просмотрено</a></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            <td><a href="{% url 'delete_notification' notification_id=n.pk %}">Удалить</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
