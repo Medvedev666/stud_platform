@@ -1552,7 +1552,7 @@ a {
   transform: translateX(-50%);
 }
 
-.title-1::before {
+/* .title-1::before {
   content: "";
   position: absolute;
   bottom: 0;
@@ -1562,7 +1562,7 @@ a {
   z-index: -1;
   border-radius: 1px;
   background-color: rgba(83, 126, 226, 0.2);
-}
+} */
 
 .title-1 i {
   margin-right: 8px;
