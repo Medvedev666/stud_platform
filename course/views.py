@@ -346,7 +346,7 @@ def user_course_list(request):
     if request.user.is_lecturer:
         courses = Course.objects.filter(allocated_course__lecturer__pk=request.user.id)
 
-        # Получаем все аллокации курсов для данного преподавателя
+        # Получаем все аллокации курсов для данного руководителя
         allocations = CourseAllocation.objects.filter(lecturer=request.user)
 
         # Создаем пустой список для хранения групп
@@ -418,9 +418,9 @@ def create_add_stud_task(request, slug, exercise_pk):
         lecturer = User.objects.get(pk=request.user.pk)
         exercise_instance = Upload.objects.get(pk=exercise_pk)
 
-        # Создание записей для каждого студента
+        # Создание записей для каждого сотрудника
         for student in students:
-            # Проверяем, существует ли уже запись для этого студента и задачи
+            # Проверяем, существует ли уже запись для этого сотрудника и задачи
             if not AddStudTask.objects.filter(student=student.student, exercise=exercise_instance).exists():
                 # Создание записи
                 add_stud_task = AddStudTask.objects.create(
@@ -482,7 +482,7 @@ def create_add_stud_task_one_choice(request, slug, student_id, exercise_pk):
         lecturer = User.objects.get(pk=request.user.pk)
         exercise_instance = Upload.objects.get(pk=exercise_pk)
 
-        # Проверяем, существует ли уже запись для этого студента и задачи
+        # Проверяем, существует ли уже запись для этого сотрудника и задачи
         if not AddStudTask.objects.filter(student=student.student, exercise=exercise_instance).exists():
             # Создание записи
             add_stud_task = AddStudTask.objects.create(
@@ -585,7 +585,7 @@ def show_stud_result(request):
                                                     'student__first_name', 
                                                     'student__father_name',
                                                     ).distinct()
-        formatted_exercises = [f"{pk}, {last_name} {first_name} {father_name}" for pk, last_name, first_name, father_name in exercises]
+        formatted_exercises = [{pk: f"{last_name} {first_name} {father_name}"} for pk, last_name, first_name, father_name in exercises]
         # groups = Group.objects.all()
         print(f'{formatted_exercises=}')
         print(f'{request.GET=}')
@@ -595,7 +595,7 @@ def show_stud_result(request):
 
             student_data = student_data.split(',')[0].strip()
 
-            # Фильтруем AddStudTask по выбранному студенту
+            # Фильтруем AddStudTask по выбранному сотруднику
             tasks = AddStudTask.objects.filter(student__pk=student_data)
 
             grades = tasks.values_list('mark', flat=True)
@@ -618,7 +618,7 @@ def show_stud_result(request):
         return render(request, 'course/show_stud_result.html', context)
     
 def all_students_for_task(request, slug, task_pk):
-    title = 'Выбор студента'
+    title = 'Выбор сотрудника'
     
     if request.user.is_student:
         return render('group')

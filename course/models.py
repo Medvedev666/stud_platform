@@ -129,6 +129,10 @@ class AddStudTask(models.Model):
     answer = models.FileField(upload_to='student_files/', validators=[FileExtensionValidator(['pdf', 'docx', 'doc', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7zip'])])
     mark = models.IntegerField(default=0)
 
+    @property
+    def answer_filename(self):
+        return os.path.basename(self.answer.name)
+
 class Notification(models.Model):
     notif_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notification_user')
     for_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='for_user')

@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('my_courses/', user_course_list, name="user_course_list"),
 
-    # назначение курса студенту
+    # назначение курса сотруднику
     path('course/show_assignments/<slug>', submitted_assignments, name="assignments"),
     path('course/add_assignments/<slug>/all/<int:exercise_pk>/', create_add_stud_task, name="add_assignments_all"),
     # path('course/add_assignment/<slug>/', create_add_stud_task_one, name="add_assignment"),

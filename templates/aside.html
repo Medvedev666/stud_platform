@@ -30,10 +30,10 @@
 				<a href="{% url 'admin_panel' %}"><i class="fas fa-user-tie"></i>Панель администратора</a>
 			</li>
 			<li class="{% if request.path == lec %}active{% endif %}">
-				<a href="{% url 'lecturer_list' %}"><i class="fas fa-chalkboard-teacher"></i>Преподаватели</a>
+				<a href="{% url 'lecturer_list' %}"><i class="fas fa-chalkboard-teacher"></i>Руководители</a>
 			</li>
 			<li class="{% if request.path == stu %}active{% endif %}">
-				<a href="{% url 'student_list' %}"><i class="fas fa-user-graduate"></i>Студенты</a>
+				<a href="{% url 'student_list' %}"><i class="fas fa-user-graduate"></i>Сотрудники</a>
 			</li>
 			{% endif %}
 
@@ -44,9 +44,9 @@
 			{% endif %}
 
 			{% if request.user.is_student %}
-			<li class="{% if request.path == ucl %}active{% endif %}">
+			<!-- <li class="{% if request.path == ucl %}active{% endif %}">
 				<a href="{% url 'user_course_list' %}"><i class="fas fa-book"></i>Мои предметы</a>
-			</li>
+			</li> -->
 			<li class="{% if request.path == '/groups/' %}active{% endif %}">
 				<a href="{% url 'groups' %}"><i class="fas fa-book-open"></i>Моя группа</a>
 			</li>

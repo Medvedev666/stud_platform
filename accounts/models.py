@@ -26,8 +26,8 @@ class UserManager(UserManager):
 
 class User(AbstractUser):
     father_name = models.CharField(max_length=30, blank=True, null=True, verbose_name='Отчество')
-    is_student = models.BooleanField(default=False, verbose_name='Студент')
-    is_lecturer = models.BooleanField(default=False, verbose_name='Преподаватель')
+    is_student = models.BooleanField(default=False, verbose_name='Сотрудник')
+    is_lecturer = models.BooleanField(default=False, verbose_name='Руководитель')
     date_birth = models.DateTimeField(blank=True, null=True, verbose_name="Дата рождения")
     picture = models.ImageField(upload_to='profile_pictures/%y/%m/%d/', 
                                 default='default.png', null=True, verbose_name="Фото")
@@ -54,9 +54,9 @@ class User(AbstractUser):
         if self.is_superuser:
             return "Администратор"
         elif self.is_student:
-            return "Студент"
+            return "Сотрудник"
         elif self.is_lecturer:
-            return "Преподаватель"
+            return "Руководитель"
 
     def get_picture(self):
         try:

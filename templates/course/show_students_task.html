@@ -72,23 +72,30 @@
                                         <span class="input-file-text" type="text"></span>
                                         <input type="file" name="answer">
                                         <input type="hidden" name="task_id" value="{{ file.pk }}">
-                                        <span class="input-file-btn">Выберите файл</span>
+                                        <span class="input-file-btn">
+                                            <i class="fa fa-file-archive"></i>
+                                        </span>
                                     </label>
-                                    <button class="download-btn" type="submit">Отправить</button>
+                                    <button class="download-btn" type="submit">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </button>
                                 </form>
                                 {% else %}
-                                {{ file.answer }}
+                                {{ file.answer_filename }}
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                    <!-- <input style="padding-right: 320px;" type="file" name="answer"> -->
-                                    <!-- <input type="hidden" name="task_id" value="{{ file.pk }}"> -->
+
                                     <label class="input-file">
                                         <span class="input-file-text" type="text"></span>
                                         <input type="file" name="answer">
                                         <input type="hidden" name="task_id" value="{{ file.pk }}">
-                                        <span class="input-file-btn">Выберите файл</span>
+                                        <span class="input-file-btn">
+                                            <i class="fa fa-file-archive"></i>
+                                        </span>
                                     </label>
-                                    <button class="download-btn" type="submit">Отправить другой файл</button>
+                                    <button class="download-btn" type="submit">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </button>
                                 </form>
                                 {% endif %}
                             </th>

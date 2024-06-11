@@ -88,9 +88,7 @@
                     {% elif student.department_id == null %}
                         <div style="margin: 13px; font-size: 22px; color: red;">Вам не назначили группу, обратитесь к администратору</div>
                     {% endif %}
-                    <script>
-                        console.log("Ид студента: {{ program.id }}");
-                    </script>
+
                 {% else %}
                 <tr>
                     <td>{{ forloop.counter }}.</td>

@@ -61,7 +61,7 @@
                             <th>Скачать</th>
                             {% if request.user.is_superuser or request.user.is_lecturer %}
                             <th>Действия</th>
-                            <th>Отправить студенту</th>
+                            <th>Отправить сотруднику</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -150,7 +150,7 @@
 </div>
 
 <div class="site-section">
-    <div class="title-1">Преподаватели</div>
+    <div class="title-1">Руководители</div>
     <br>
     <div class="container marketing">
         <div class="row">

@@ -13,7 +13,9 @@
                     <label for="exercise">Выберите предмет:</label>
                     <select id="exercise" name="exercise">
                         {% for exercise in exercises %}
-                        <option value="{{ exercise }}">{{ exercise }}</option>
+                        {% for key, value in exercise.items %}
+                        <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
                         {% endfor %}
                     </select>
                     
@@ -28,7 +30,7 @@
                     <tr>
                         <th>#</th>
                         <th>Задание</th>
-                        <th>Студент</th>
+                        <th>Сотрудник</th>
                         <th>Дата выполнения</th>
                         <th>Оценка</th>
                     </tr>
