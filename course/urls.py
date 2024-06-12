@@ -40,4 +40,8 @@ urlpatterns = [
     # просмотр результата
     path('show_stud_result/', show_stud_result, name="show_stud_result"),
     path('course/update_mark/<int:pk>/<int:task_id>/<int:new_mark>', update_mark, name="update_mark"),
+
+    # оставить комментарий
+    path('<int:pk>/create_comment/<int:task_id>', add_comment, name="create_comment"),
+    path('<int:pk>/comment_edit/<int:task_id>/comment/<int:comment_id>', comment_edit, name="comment_edit"),
 ]

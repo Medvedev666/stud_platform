@@ -16,9 +16,11 @@ from django.contrib.auth.forms import (
 )
 
 from .decorators import lecturer_required, student_required, admin_required
-from course.models import Group, Notification
+from course.models import Group, Notification, AddStudTask
 from .forms import StaffAddForm, StudentAddForm, ProfileUpdateForm, StudentUpdateForm
 from .models import User, Student
+
+from datetime import date
 
 
 @login_required
@@ -129,6 +131,21 @@ def profile_single(request, id):
 def admin_panel(request):
     return render(request, "setting/admin_panel.html", {})
 
+@login_required
+@admin_required
+def run_check_last_date(request):
+
+    if request.user.is_student:
+        return render('home')
+
+    today = date.today()
+    tasks_to_check = AddStudTask.objects.filter(exercise__last_date=today)
+    for task in tasks_to_check:
+        task.mark = 2
+        task.save()
+
+    messages.success(request, "Проверка успешно выполнена.")
+    return redirect('admin_panel')  
 
 @login_required
 def profile_update(request):

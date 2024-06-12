@@ -43,6 +43,7 @@
                             <th>Задание</th>
                             <th>Назначил задание</th>
                             <th>Дата обновления</th>
+                            <th style="color: #e51000;">Сдать до</th>
                             <th>Решение</th>
                             <th>Оценка</th>
                             <th>Оценить</th>
@@ -52,15 +53,21 @@
                         {% for file in sub_task %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td><a href="{{ file.file.url }}" title="{{ file }}">
+                            <td>
+                                <a href="{% url 'profile_single' file.student.id %}" title="{{ file }}">
                                     <i style="font-size: 20px; padding-right: 10px;"
                                         class="fas fa-file-{{ file.get_extension_short }}"></i>
                                     {{ file.student.get_full_name }}
                                 </a>
                             </td>
-                            <td>{{ file.exercise.title }}</td>
+                            <td>
+                                <a href="{{ file.exercise.file.url }}" title="{{ file }}">
+                                    {{ file.exercise.title }}
+                                </a>
+                            </td>
                             <td>{{ file.lecturer.get_full_name }}</td>
                             <td>{{ file.updated_date|date:"d.m.Y" }}</td>
+                            <td style="color: #e51000;">{{ file.exercise.last_date|date:"d.m.Y" }}</td>
                             <th>
                                 {% if file.answer == '' %}
                                 Не загружено
@@ -80,7 +87,7 @@
                                         aria-expanded="false">
                                         <div class="update-delete">
                                             <a href="#" class="update" title="Оценить">
-                                                <i class="fas fa-pencil-alt"></i>
+                                                <i class="fas fa-hand-pointer"></i>
                                             </a>
                                         </div>
                                     </button>
@@ -96,7 +103,28 @@
                                     </div>
                                 </div>
                             </td>
+                            {% for coment in comments %}
+                            {% if coment.task == file %}
+                            <td>
+                                <a href="{% url 'comment_edit' pk=course.pk task_id=file.pk comment_id=coment.pk %}" class="update" title="Изменить комментарий">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
                             {% endif %}
+                            {% empty %}
+                            <td>
+                                <a href="{% url 'create_comment' pk=course.pk task_id=file.pk %}" class="update" title="Комментировать">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% for coment in comments %}
+                            {% if coment.task == file %}
+                            <td style="color: #e51000;">{{ coment.messages }}</td>
+                            {% endif %}
+                            {% endfor %}
 
                             {% empty %}
                         <tr>
@@ -104,9 +132,10 @@
                             <td></td>
                             <td>
                                 <span class="text-danger">
-                                    <i class="far fa-frown fa-1x"></i> Сотрудники не найдены.
+                                    Нет назначенных заданий.
                                 </span>
                             </td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>

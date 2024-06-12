@@ -14,11 +14,11 @@ from accounts.models import User, Student
 from accounts.decorators import lecturer_required, student_required
 from .forms import (
     GroupForm, UploadFormFile,
-    AddStudTaskForm
+    AddStudTaskForm, CommentsForm
 )
 from .models import (
     Group, CourseAllocation, 
-    Upload, AddStudTask
+    Upload, AddStudTask, Comments
 )
 
 
@@ -171,7 +171,7 @@ def handle_file_edit(request, pk, file_id):
         if form.is_valid():
             form.save()
             messages.success(request, (request.POST.get('title') + ' был обновлен.'))
-            return redirect('course_detail', pk=pk)
+            return redirect('group_detail', pk=pk)
     else:
         form = UploadFormFile(instance=instance)
 
@@ -186,7 +186,7 @@ def handle_file_delete(request, pk, file_id):
     file.delete()
 
     messages.success(request, (file.title + ' был удален.'))
-    return redirect('course_detail', pk=pk)
+    return redirect('group_detail', pk=pk)
 
 
 
@@ -235,6 +235,8 @@ def user_course_list(request):
 @login_required
 def submitted_assignments(request, pk):
 
+    comments = Comments.objects.all()
+
     if request.user.is_student:
         return redirect('groups')
 
@@ -254,6 +256,7 @@ def submitted_assignments(request, pk):
         'title': 'Назначенные задания ' + course.title,
         'sub_task': sub_task,
         'course': course,
+        'comments': comments
     }
 
     return render(request, 'course/submitted_tasks.html', context)
@@ -358,6 +361,8 @@ def show_students_task(request):
     if not request.user.is_student:
         return redirect('groups')
     
+    comments = Comments.objects.all()
+    
     stud_task = AddStudTask.objects.filter(student=request.user)
 
     if request.method == 'POST':
@@ -374,7 +379,9 @@ def show_students_task(request):
         form = AddStudTaskForm()
 
     context = {
+        'title': "Назначенные задания",
         'stud_task': stud_task,
+        'comments': comments
     }
 
     return render(request, 'course/show_students_task.html', context)
@@ -483,4 +490,63 @@ def all_students_for_task(request, pk, task_pk):
     }
     return render(request, 'course/all_students_for_task.html', context)
 
+
+@login_required
+def add_comment(request, pk, task_id):
     
+    if request.user.is_student:
+        return render('group')
+
+    task = AddStudTask.objects.get(pk=task_id)
+
+    if request.method == 'POST':
+        form = CommentsForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.from_user = request.user
+            comment.task = task
+            comment.save()
+
+            messages.success(request, 'Комментарий к ' + task.exercise.title + ' создан.')
+            return redirect('assignments', pk=pk)
+        else:
+            messages.error(request, 'Исправьте ошибки ниже.')
+    else:
+        form = CommentsForm()
+
+    return render(request, 'course/make_comments.html', {
+        'title': "Добавить комментарий к " + task.exercise.title,
+        'form': form,
+        'group_pk': pk,
+        'task': task
+    })
+
+@login_required
+def comment_edit(request, pk, task_id, comment_id):
+    
+    if request.user.is_student:
+        return render('group')
+
+    comment = Comments.objects.get(pk=comment_id)
+    task = AddStudTask.objects.get(pk=task_id)
+
+    if request.method == 'POST':
+        form = CommentsForm(request.POST, instance=comment)
+        print(f'{form.errors}')
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.from_user = request.user
+            comment.task = task
+            comment.save()
+
+            messages.success(request, 'Комментарий к ' + task.exercise.title + ' отредактирован.')
+            return redirect('assignments', pk=pk)
+    else:
+        form = CommentsForm(instance=comment)
+
+    return render(request, 'course/make_comments.html', {
+        'title': "Редактировать комментарий к " + task.exercise.title,
+        'form': form,
+        'group_pk': pk,
+        'task': task
+    })

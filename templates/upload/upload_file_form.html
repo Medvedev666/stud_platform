@@ -47,6 +47,12 @@
                     <option value="{{ course.pk }}" selected>{{ course }}</option>
                 </select>
             </div>
+
+            <div class="form-group">
+                <b>{{ form.last_date.label }}</b>{{ form.last_date }}
+                <span class="danger">{{ form.last_date.errors }}</span>
+            </div>
+
             <div class="form-group">
                 <button class="btn btn-primary" type="submit">Загрузить</button>
                 <a class="btn btn-danger" href="{% url 'group_detail' course.pk %}" style="float: right;">Отмена</a>

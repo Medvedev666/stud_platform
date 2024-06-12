@@ -37,7 +37,7 @@
                             <th>#</th>
                             <th>Название</th>
                             <th>Дата загрузки</th>
-                            <th>Дата обновления</th>
+                            <th style="color: #e51000;">Сдать до</th>
                             <th>Скачать</th>
                             <th>Загрузить</th>
                             <th>Оценка</th>
@@ -54,7 +54,7 @@
                                 </a>
                             </td>
                             <td>{{ file.upload_time|date:"d.m.Y" }}</td>
-                            <td>{{ file.updated_date|date:"d.m.Y" }}</td>
+                            <td style="color: #e51000;">{{ file.exercise.last_date|date:"d.m.Y" }}</td>
                             <th>
                                 <div>
                                     <a class="download-btn" href="{{ file.exercise.file.url }}" title="Download to your device">
@@ -64,11 +64,11 @@
                             </th>
                             <th>
                                 {% if file.answer == '' %}
-                                <form method="post" enctype="multipart/form-data">
+                                <form method="post" enctype="multipart/form-data" style="display: flex; align-items: center;">
                                     {% csrf_token %}
                                     <!-- <input style="padding-right: 320px;" type="file" name="answer">
                                     <input type="hidden" name="task_id" value="{{ file.pk }}"> -->
-                                    <label class="input-file">
+                                    <label class="input-file" style="display: flex;">
                                         <span class="input-file-text" type="text"></span>
                                         <input type="file" name="answer">
                                         <input type="hidden" name="task_id" value="{{ file.pk }}">
@@ -82,10 +82,10 @@
                                 </form>
                                 {% else %}
                                 {{ file.answer_filename }}
-                                <form method="post" enctype="multipart/form-data">
+                                <form method="post" enctype="multipart/form-data" style="display: flex; align-items: center;">
                                     {% csrf_token %}
 
-                                    <label class="input-file">
+                                    <label class="input-file" style="display: flex;">
                                         <span class="input-file-text" type="text"></span>
                                         <input type="file" name="answer">
                                         <input type="hidden" name="task_id" value="{{ file.pk }}">
@@ -100,6 +100,12 @@
                                 {% endif %}
                             </th>
                             <td>{{ file.mark }}</td>
+
+                            {% for coment in comments %}
+                            {% if coment.task == file %}
+                            <td style="color: #e51000;">{{ coment.messages }}</td>
+                            {% endif %}
+                            {% endfor %}
     
                             {% empty %}
                         <tr>

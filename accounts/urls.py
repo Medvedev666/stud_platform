@@ -10,7 +10,8 @@ from .views import (
         staff_add_view, edit_staff, 
         delete_staff, student_add_view, 
         edit_student, delete_student, validate_username, register,
-        home_view, delete_notification, mark_notification_as_viewed
+        home_view, delete_notification, mark_notification_as_viewed,
+        run_check_last_date
     )
 from .forms import EmailValidationOnForgotPassword
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
 
     path('accounts/admin_panel/', admin_panel, name='admin_panel'),
+    path('accounts/start_mark_chek/', run_check_last_date, name='start_mark_chek'),
     
     
 

@@ -55,6 +55,7 @@ class Upload(models.Model):
     file = models.FileField(upload_to='course_files/', validators=[FileExtensionValidator(['pdf', 'docx', 'doc', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7zip'])])
     updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
     upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
+    last_date = models.DateTimeField(blank=True, null=False, verbose_name="Сдать до ")
 
     def __str__(self):
         return str(self.file)[6:]
@@ -105,3 +106,14 @@ class Notification(models.Model):
     exercise_notif = models.ForeignKey(AddStudTask, on_delete=models.CASCADE)
     messages = models.TextField(null=True, blank=True, verbose_name='Сообщение')
     is_viewed = models.BooleanField(default=False, verbose_name='Просмотренно')
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
+    last_date = models.ForeignKey(Upload, on_delete=models.CASCADE, null=False, blank=True, related_name='notifications_date')
+
+
+class Comments(models.Model):
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    task = models.ForeignKey(AddStudTask, on_delete=models.CASCADE)
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
+    messages = models.TextField(null=True, blank=True, verbose_name='Сообщение')
+    
+

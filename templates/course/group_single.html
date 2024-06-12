@@ -56,11 +56,12 @@
                     <th>#</th>
                     <th>Название</th>
                     <th>Дата загрузки</th>
-                    <th>Дата обновления</th>
+                    <th style="color: #e51000;">Сдать до</th>
                     <th>Скачать</th>
+
                     {% if request.user.is_superuser or request.user.is_lecturer %}
                     <th>Действия</th>
-                    <th>Отправить сотруднику</th>
+                    <th>Отправить</th>
                     {% endif %}
                 </tr>
             </thead>
@@ -75,7 +76,7 @@
                         </a>
                     </td>
                     <td>{{ file.upload_time|date:"d.m.Y" }}</td>
-                    <td>{{ file.updated_date|date:"d.m.Y" }}</td>
+                    <td  style="color: #e51000;">{{ file.last_date|date:"d.m.Y" }}</td>
                     <th>
                         <div>
                             <a class="download-btn" href="{{ file.file.url }}" title="Download to your device">

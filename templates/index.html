@@ -63,6 +63,7 @@
                             <th>Сотрудник</th>
                             {% endif %}
                             <th>Уведомление</th>
+                            <th style="color: #e51000;">Сдать до</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -74,7 +75,8 @@
                             <td style="color: green;">New!</td>
                             <td>{{ n.notif_user.get_full_name }}</td>
                             <td>{{ n.messages }}</td>
-                            <td><a href="{% url 'mark_notification_as_viewed' notification_id=n.pk %}">Посмотреть</a></td>
+                            <td style="color: #e51000;">{{ n.last_date.last_date|date:"d.m.Y" }}</td>
+                            <td><a href="{% url 'mark_notification_as_viewed' notification_id=n.pk %}">Отметить прочитанным</a></td>
                             <td><a href="{% url 'delete_notification' notification_id=n.pk %}">Удалить</a></td>
                         </tr>
                         {% endif %}
@@ -86,6 +88,7 @@
                             <td></td>
                             <td>{{ n.notif_user.get_full_name }}</td>
                             <td>{{ n.messages }}</td>
+                            <td style="color: #e51000;">{{ n.last_date.last_date|date:"d.m.Y" }}</td>
                             <td></td>
                             <td><a href="{% url 'delete_notification' notification_id=n.pk %}">Удалить</a></td>
                         </tr>

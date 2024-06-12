@@ -5,7 +5,9 @@ from .models import AddStudTask, Notification
 
 @receiver(post_save, sender=AddStudTask)
 def create_notification(sender, instance, created, **kwargs):
-
+    print(f'{instance=}')
+    print(f'{created=}')
+    print(f'{instance.exercise.last_date=}')
     if created:
 
         # Проверяем, является ли пользователь лектором и создал ли он новую запись
@@ -20,7 +22,8 @@ def create_notification(sender, instance, created, **kwargs):
                 notif_user_id=notif_user_id,
                 for_user_id=for_user_id,
                 exercise_notif=instance,
-                messages=message
+                messages=message,
+                last_date=instance.exercise
             )
     else:
     
@@ -33,5 +36,6 @@ def create_notification(sender, instance, created, **kwargs):
             notif_user_id=notif_user_id,
             for_user_id=for_user_id,
             exercise_notif=instance,
-            messages=message
+            messages=message,
+            last_date=instance.exercise
         )
