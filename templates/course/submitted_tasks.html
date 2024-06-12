@@ -8,8 +8,7 @@
 
     <div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная </a>
         <a href="{% url 'groups' %}" class="primary1">Группа </a>
-        <a href="{% url 'group_detail' course.group.id %}" class="primary1"> {{ course.group }}</a>
-        <a href="{% url 'course_detail' course.slug %}" class="primary1"> {{ course }}</a>
+        <a href="{% url 'group_detail' course.id %}" class="primary1"> {{ course }}</a>
         Назначенные задания
     </div>
 
@@ -87,13 +86,13 @@
                                     </button>
                                     <div class="dropdown-menu" style="min-width: 5rem !important;" aria-labelledby="dropdownMenuButton">
                                         <a class="dropdown-item" 
-                                            href="{% url 'update_mark' slug=course.slug  task_id=file.pk new_mark=2 %}">2</a>
+                                            href="{% url 'update_mark' pk=course.pk  task_id=file.pk new_mark=2 %}">2</a>
                                         <a class="dropdown-item" 
-                                            href="{% url 'update_mark' slug=course.slug  task_id=file.pk new_mark=3 %}">3</a>
+                                            href="{% url 'update_mark' pk=course.pk  task_id=file.pk new_mark=3 %}">3</a>
                                         <a class="dropdown-item" 
-                                            href="{% url 'update_mark' slug=course.slug  task_id=file.pk new_mark=4 %}">4</a>
+                                            href="{% url 'update_mark' pk=course.pk  task_id=file.pk new_mark=4 %}">4</a>
                                         <a class="dropdown-item" 
-                                            href="{% url 'update_mark' slug=course.slug  task_id=file.pk new_mark=5 %}">5</a>
+                                            href="{% url 'update_mark' pk=course.pk  task_id=file.pk new_mark=5 %}">5</a>
                                     </div>
                                 </div>
                             </td>

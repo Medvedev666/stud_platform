@@ -8,8 +8,7 @@
 
     <div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная </a>
         <a href="{% url 'groups' %}" class="primary1">Группа </a>
-        <a href="{% url 'group_detail' course.group.id %}" class="primary1"> {{ course.group }}</a>
-        <a href="{% url 'course_detail' course.slug %}" class="primary1"> {{ course }}</a>
+        <a href="{% url 'group_detail' course.id %}" class="primary1"> {{ course }}</a>
         Назначение задания
     </div>
 
@@ -58,7 +57,7 @@
                             {% if request.user.is_superuser or request.user.is_lecturer %}
                             <td>
                                 <div class="update-delete">
-                                    <a href="{% url 'create_add_stud_task_one_choice' slug=course.slug student_id=file.pk exercise_pk=task_pk %}"
+                                    <a href="{% url 'create_add_stud_task_one_choice' pk=course.pk student_id=file.pk exercise_pk=task_pk %}"
                                         class="update" title="Отправить">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>

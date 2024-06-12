@@ -16,7 +16,7 @@ from django.contrib.auth.forms import (
 )
 
 from .decorators import lecturer_required, student_required, admin_required
-from course.models import Course, Notification
+from course.models import Group, Notification
 from .forms import StaffAddForm, StudentAddForm, ProfileUpdateForm, StudentUpdateForm
 from .models import User, Student
 
@@ -57,7 +57,7 @@ def profile(request):
     """Show profile of any user that fire out the request"""
 
     if request.user.is_lecturer:
-        courses = Course.objects.filter(
+        courses = Group.objects.filter(
             allocated_course__lecturer__pk=request.user.id
         )
         return render(
@@ -97,7 +97,7 @@ def profile_single(request, id):
     
     user = User.objects.get(pk=id)
     if user.is_lecturer:
-        courses = Course.objects.filter(allocated_course__lecturer__pk=id)
+        courses = Group.objects.filter(allocated_course__lecturer__pk=id)
         context = {
             "title": user.get_full_name,
             "user": user,

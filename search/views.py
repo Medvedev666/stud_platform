@@ -4,7 +4,7 @@ from django.views.generic import ListView
 from django.db.models import Q
 
 from accounts.models import User, Student
-from course.models import Group, Course
+from course.models import Group
 
 
 class SearchView(ListView):
@@ -24,12 +24,10 @@ class SearchView(ListView):
         
         if query is not None:
             group_results      = Group.objects.search(query)
-            course_results       = Course.objects.search(query)
             
             # combine querysets 
             queryset_chain = chain(
                     group_results,
-                    course_results,
             )        
             qs = sorted(queryset_chain, 
                         key=lambda instance: instance.pk, 

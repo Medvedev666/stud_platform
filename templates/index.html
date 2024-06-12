@@ -69,21 +69,27 @@
                     </thead>
                     <tbody>
                         {% for n in notif %}
+                        {% if n.is_viewed == False %}
                         <tr>
-                            {% if n.is_viewed %}
-                            <td></td>
-                            {% else %}
                             <td style="color: green;">New!</td>
-                            {% endif %}
                             <td>{{ n.notif_user.get_full_name }}</td>
                             <td>{{ n.messages }}</td>
-                            {% if not n.is_viewed %}
-                            <td><a href="{% url 'mark_notification_as_viewed' notification_id=n.pk %}">Просмотрено</a></td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
+                            <td><a href="{% url 'mark_notification_as_viewed' notification_id=n.pk %}">Посмотреть</a></td>
                             <td><a href="{% url 'delete_notification' notification_id=n.pk %}">Удалить</a></td>
                         </tr>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% for n in notif %}
+                        {% if n.is_viewed %}
+                        <tr>
+                            <td></td>
+                            <td>{{ n.notif_user.get_full_name }}</td>
+                            <td>{{ n.messages }}</td>
+                            <td></td>
+                            <td><a href="{% url 'delete_notification' notification_id=n.pk %}">Удалить</a></td>
+                        </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>

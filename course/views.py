@@ -13,12 +13,11 @@ from django.utils import timezone
 from accounts.models import User, Student
 from accounts.decorators import lecturer_required, student_required
 from .forms import (
-    GroupForm, CourseAddForm, CourseAllocationForm, 
-    EditCourseAllocationForm, UploadFormFile,
+    GroupForm, UploadFormFile,
     AddStudTaskForm
 )
 from .models import (
-    Group, Course, CourseAllocation, 
+    Group, CourseAllocation, 
     Upload, AddStudTask
 )
 
@@ -69,29 +68,31 @@ def group_add(request):
 
 @login_required
 def group_detail(request, pk):
+    print(f'{pk=}')
     group = Group.objects.get(pk=pk)
-    courses = Course.objects.filter(group_id=pk).order_by('title')
+    courses = Upload.objects.filter(course__pk=pk).order_by('title')
+
+    paginator = Paginator(courses, 10)
     
     if request.user.is_student:
         student = Student.objects.get(student__pk=request.user.id)
 
-        paginator = Paginator(courses, 10)
         page = request.GET.get('page')
+        page = paginator.get_page(page)
 
-        courses = paginator.get_page(page)
-        paginator = Paginator(courses, 10)
         return render(request, 'course/group_single.html', {
             'title': group.title,
-            'group': group, 'courses': courses, 
+            'group': group, 
+            'courses': courses, 
         }, )
     else:
         students = Student.objects.filter(department=group)
 
-        paginator = Paginator(courses, 10)
         page = request.GET.get('page')
 
-        courses = paginator.get_page(page)
-        paginator = Paginator(courses, 10)
+        page = paginator.get_page(page)
+
+        print(f'{courses=}')
 
         context = {
             'title': group.title,
@@ -135,158 +136,6 @@ def group_delete(request, pk):
     return redirect('groups')
 # ########################################################
 
-# ########################################################
-# Course views
-# ########################################################
-@login_required
-def course_single(request, slug):
-    course = Course.objects.get(slug=slug)
-    files = Upload.objects.filter(course__slug=slug)
-
-    # lecturers = User.objects.filter(allocated_lecturer__pk=course.id)
-    lecturers = CourseAllocation.objects.filter(courses__pk=course.id)
-
-    return render(request, 'course/course_single.html', {
-        'title': course.title,
-        'course': course,
-        'files': files,
-        'lecturers': lecturers,
-        'media_url': settings.MEDIA_ROOT,
-    }, )
-
-
-@login_required
-@lecturer_required
-def course_add(request, pk):
-    users = User.objects.all()
-    if request.method == 'POST':
-        form = CourseAddForm(request.POST)
-        course_name = request.POST.get('title')
-        course_code = request.POST.get('code')
-        if form.is_valid():
-            form.save()
-            messages.success(request, (course_name + '(' + course_code + ')' + ' был создан.'))
-            return redirect('group_detail', pk=request.POST.get('group'))
-        else:
-            print(f'{form.errors=}')
-            messages.error(request, 'Исправьте ошибки ниже.')
-    else:
-        form = CourseAddForm(initial={'group': Group.objects.get(pk=pk)})
-
-    return render(request, 'course/course_add.html', {
-        'title': "Добавить предмет",
-        'form': form, 'group': pk, 'users': users
-    }, )
-
-
-@login_required
-@lecturer_required
-def course_edit(request, slug):
-    course = get_object_or_404(Course, slug=slug)
-    if request.method == 'POST':
-        form = CourseAddForm(request.POST, instance=course)
-        course_name = request.POST.get('title')
-        course_code = request.POST.get('code')
-        if form.is_valid():
-            form.save()
-            messages.success(request, (course_name + '(' + course_code + ')' + ' был обновлен.'))
-            return redirect('group_detail', pk=request.POST.get('group'))
-        else:
-            messages.error(request, 'Исправьте ошибки ниже.')
-    else:
-        form = CourseAddForm(instance=course)
-
-    return render(request, 'course/course_add.html', {
-        'title': "Редактировать курс",
-        'form': form
-    }, )
-
-
-@login_required
-@lecturer_required
-def course_delete(request, slug):
-    course = Course.objects.get(slug=slug)
-    # course_name = course.title
-    course.delete()
-    messages.success(request, 'Курс ' + course.title + ' был удален.')
-
-    return redirect('group_detail', pk=course.Group.id)
-# ########################################################
-
-
-# ########################################################
-# Course Allocation
-# ########################################################
-@method_decorator([login_required], name='dispatch')
-class CourseAllocationFormView(CreateView):
-    form_class = CourseAllocationForm
-    template_name = 'course/course_allocation_form.html'
-
-    def get_form_kwargs(self):
-        kwargs = super(CourseAllocationFormView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        # if a staff has been allocated a course before update it else create new
-        lecturer = form.cleaned_data['lecturer']
-        selected_courses = form.cleaned_data['courses']
-        courses = ()
-        for course in selected_courses:
-            courses += (course.pk,)
-        # print(courses)
-
-        try:
-            a = CourseAllocation.objects.get(lecturer=lecturer)
-        except:
-            a = CourseAllocation.objects.create(lecturer=lecturer)
-        for i in range(0, selected_courses.count()):
-            a.courses.add(courses[i])
-            a.save()
-        return redirect('course_allocation_view')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "Распределение предметов"
-        return context
-
-
-@login_required
-def course_allocation_view(request):
-    allocated_courses = CourseAllocation.objects.all()
-    return render(request, 'course/course_allocation_view.html', {
-        'title': "Список распределения предметов",
-        "allocated_courses": allocated_courses
-    })
-
-
-@login_required
-@lecturer_required
-def edit_allocated_course(request, pk):
-    allocated = get_object_or_404(CourseAllocation, pk=pk)
-    if request.method == 'POST':
-        form = EditCourseAllocationForm(request.POST, instance=allocated)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'назначенный курс обновлен.')
-            return redirect('course_allocation_view')
-    else:
-        form = EditCourseAllocationForm(instance=allocated)
-
-    return render(request, 'course/course_allocation_form.html', {
-        'title': "Редактировать",
-        'form': form, 'allocated': pk
-    }, )
-
-
-@login_required
-@lecturer_required
-def deallocate_course(request, pk):
-    course = CourseAllocation.objects.get(pk=pk)
-    course.delete()
-    messages.success(request, 'курс успешно удален!')
-    return redirect("course_allocation_view")
-# ########################################################
 
 
 # ########################################################
@@ -294,15 +143,15 @@ def deallocate_course(request, pk):
 # ########################################################
 @login_required
 @lecturer_required
-def handle_file_upload(request, slug):
-    course = Course.objects.get(slug=slug)
+def handle_file_upload(request, pk):
+    course = Group.objects.get(pk=pk)
     if request.method == 'POST':
         form = UploadFormFile(request.POST, request.FILES, {'course': course})
         # file_name = request.POST.get('name')
         if form.is_valid():
             form.save()
             messages.success(request, (request.POST.get('title') + ' был загружен.'))
-            return redirect('course_detail', slug=slug)
+            return redirect('group_detail', pk=pk)
     else:
         form = UploadFormFile()
     return render(request, 'upload/upload_file_form.html', {
@@ -313,8 +162,8 @@ def handle_file_upload(request, slug):
 
 @login_required
 @lecturer_required
-def handle_file_edit(request, slug, file_id):
-    course = Course.objects.get(slug=slug)
+def handle_file_edit(request, pk, file_id):
+    course = Group.objects.get(pk=pk)
     instance = Upload.objects.get(pk=file_id)
     if request.method == 'POST':
         form = UploadFormFile(request.POST, request.FILES, instance=instance)
@@ -322,7 +171,7 @@ def handle_file_edit(request, slug, file_id):
         if form.is_valid():
             form.save()
             messages.success(request, (request.POST.get('title') + ' был обновлен.'))
-            return redirect('course_detail', slug=slug)
+            return redirect('course_detail', pk=pk)
     else:
         form = UploadFormFile(instance=instance)
 
@@ -331,20 +180,20 @@ def handle_file_edit(request, slug, file_id):
         'form': form, 'course': course})
 
 
-def handle_file_delete(request, slug, file_id):
+def handle_file_delete(request, pk, file_id):
     file = Upload.objects.get(pk=file_id)
     # file_name = file.name
     file.delete()
 
     messages.success(request, (file.title + ' был удален.'))
-    return redirect('course_detail', slug=slug)
+    return redirect('course_detail', pk=pk)
 
 
 
 @login_required
 def user_course_list(request):
     if request.user.is_lecturer:
-        courses = Course.objects.filter(allocated_course__lecturer__pk=request.user.id)
+        courses = Group.objects.filter(allocated_course__lecturer__pk=request.user.id)
 
         # Получаем все аллокации курсов для данного руководителя
         allocations = CourseAllocation.objects.filter(lecturer=request.user)
@@ -374,7 +223,7 @@ def user_course_list(request):
             context = {"student": student,}
             return render(request, 'course/user_course_list.html', context)
         else:
-            courses = Course.objects.filter(group__pk=student.department.id)
+            courses = Group.objects.filter(pk=student.department.id)
 
             return render(request, 'course/user_course_list.html', {
                 'student': student,
@@ -384,22 +233,22 @@ def user_course_list(request):
         return render(request, 'course/user_course_list.html')
 
 @login_required
-def submitted_assignments(request, slug):
+def submitted_assignments(request, pk):
 
     if request.user.is_student:
         return redirect('groups')
 
-    course = Course.objects.get(slug=slug)
+    course = Group.objects.get(pk=pk)
     lecturers = CourseAllocation.objects.filter(courses__pk=course.id)
 
-    is_user_in_lecturers = lecturers.filter(lecturer=request.user).exists()
+    # is_user_in_lecturers = lecturers.filter(lecturer=request.user).exists()
 
-    if not is_user_in_lecturers and not request.user.is_superuser:
+    if not request.user.is_lecturer and not request.user.is_superuser:
         return redirect('groups')
     
     sub_task = AddStudTask.objects.filter(lecturer=request.user)
     if request.user.is_superuser:
-        sub_task = AddStudTask.objects.filter(exercise__course__slug=slug)
+        sub_task = AddStudTask.objects.filter(exercise__course__pk=pk)
 
     context = {
         'title': 'Назначенные задания ' + course.title,
@@ -410,10 +259,11 @@ def submitted_assignments(request, slug):
     return render(request, 'course/submitted_tasks.html', context)
 
 @login_required
-def create_add_stud_task(request, slug, exercise_pk):
+def create_add_stud_task(request, pk, exercise_pk):
     try:
-        group = Course.objects.get(slug=slug)
-        students = Student.objects.filter(department=group.group)
+
+        group = Group.objects.get(pk=pk)
+        students = Student.objects.filter(department=group)
 
         lecturer = User.objects.get(pk=request.user.pk)
         exercise_instance = Upload.objects.get(pk=exercise_pk)
@@ -432,22 +282,21 @@ def create_add_stud_task(request, slug, exercise_pk):
                 )
 
         messages.success(request, 'Задание успешно отправлено')
-        return redirect('course_detail', slug=slug)
+        return redirect('group_detail', pk=pk)
 
-    except Course.DoesNotExist:
+    except Group.DoesNotExist:
         messages.error(request, 'Группа не найдена')
-        return redirect('course_detail', slug=slug)
+        return redirect('group_detail', pk=pk)
 
     except Exception as e:
         messages.error(request, f'Ошибка: {e}')
-        return redirect('course_detail', slug=slug)
+        return redirect('group_detail', pk=pk)
     
 @login_required
-def create_add_stud_task_one(request, slug):
+def create_add_stud_task_one(request, pk):
 
 
-    group = Course.objects.get(slug=slug)
-    course = Course.objects.get(slug=slug)
+    course = Group.objects.get(pk=pk)
     file_name = Upload.objects.get(course=course)
     lecturers = CourseAllocation.objects.filter(courses__pk=course.id)
     is_user_in_lecturers = lecturers.filter(lecturer=request.user).exists()
@@ -461,7 +310,7 @@ def create_add_stud_task_one(request, slug):
     
     stud_task = AddStudTask.objects.all()
     
-    students = Student.objects.filter(department=group.group)
+    students = Student.objects.filter(department=course)
 
     context = {
         'title': 'Назначение задания ' + course.title,
@@ -474,9 +323,8 @@ def create_add_stud_task_one(request, slug):
     return render(request, 'course/addsubmitted_tasks.html', context)
 
 @login_required
-def create_add_stud_task_one_choice(request, slug, student_id, exercise_pk):
+def create_add_stud_task_one_choice(request, pk, student_id, exercise_pk):
     try:
-        group = Course.objects.get(slug=slug)
         student = Student.objects.get(student__pk=student_id)
 
         lecturer = User.objects.get(pk=request.user.pk)
@@ -494,15 +342,15 @@ def create_add_stud_task_one_choice(request, slug, student_id, exercise_pk):
             )
 
         messages.success(request, 'Задание успешно отправлено')
-        return redirect('all_students_for_task', slug=slug, task_pk=exercise_pk)
+        return redirect('all_students_for_task', pk=pk, task_pk=exercise_pk)
 
-    except Course.DoesNotExist:
+    except Group.DoesNotExist:
         messages.error(request, 'Группа не найдена')
-        return redirect('add_assignment', slug=slug)
+        return redirect('add_assignment', pk=pk)
 
     except Exception as e:
         messages.error(request, f'Ошибка: {e}')
-        return redirect('add_assignment', slug=slug)
+        return redirect('add_assignment', pk=pk)
 
 @login_required
 def show_students_task(request):
@@ -532,7 +380,7 @@ def show_students_task(request):
     return render(request, 'course/show_students_task.html', context)
 
 @login_required
-def update_mark(request, slug, task_id, new_mark):
+def update_mark(request, pk, task_id, new_mark):
     if request.user.is_student:
         return redirect('groups')
     
@@ -546,7 +394,7 @@ def update_mark(request, slug, task_id, new_mark):
 
         # Возвращаем успешный ответ
         messages.success(request, f'Оценка {new_mark} установлена')
-        return redirect('assignments', slug=slug)
+        return redirect('assignments', pk=pk)
     
 
 def calculate_average(grades):
@@ -617,13 +465,13 @@ def show_stud_result(request):
 
         return render(request, 'course/show_stud_result.html', context)
     
-def all_students_for_task(request, slug, task_pk):
+def all_students_for_task(request, pk, task_pk):
     title = 'Выбор сотрудника'
     
     if request.user.is_student:
         return render('group')
     
-    course = Course.objects.get(slug=slug)
+    course = Group.objects.get(pk=pk)
     
     students = User.objects.filter(is_student=True)
 

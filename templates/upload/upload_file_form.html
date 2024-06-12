@@ -6,8 +6,7 @@
 
 <div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a>
      <i>&rsaquo;</i> <a href="{% url 'groups' %}" class="primary1">Группы</a> 
-     <a href="{% url 'group_detail' course.group.id %}" class="primary1"> {{ course.group }}</a>  
-     <a href="{% url 'course_detail' course.slug %}" class="primary1">{{ course }}</a>
+     <a href="{% url 'group_detail' course.pk %}" class="primary1"> {{ course.group }}</a>  
        Загрузка файлов</div>
 
 <p class="title-1">Загрузка файлов для {{ course }}</p>
@@ -50,7 +49,7 @@
             </div>
             <div class="form-group">
                 <button class="btn btn-primary" type="submit">Загрузить</button>
-                <a class="btn btn-danger" href="{% url 'course_detail' course.slug %}" style="float: right;">Отмена</a>
+                <a class="btn btn-danger" href="{% url 'group_detail' course.pk %}" style="float: right;">Отмена</a>
             </div>
 
         </div>

@@ -35,46 +35,12 @@ class Group(models.Model):
         return reverse('group_detail', kwargs={'pk': self.pk})
 
 
-class CourseManager(models.Manager):
-    def search(self, query=None):
-        qs = self.get_queryset()
-        if query is not None:
-            or_lookup = (Q(title__icontains=query) | 
-                         Q(summary__icontains=query)| 
-                         Q(code__icontains=query)| 
-                         Q(slug__icontains=query)
-                        )
-            qs = qs.filter(or_lookup).distinct() # distinct() is often necessary with Q lookups
-        return qs
 
-
-class Course(models.Model):
-    slug = models.SlugField(blank=True, unique=True)
-    title = models.CharField(max_length=200, null=True)
-    code = models.CharField(max_length=200, unique=True, null=True)
-    summary = models.TextField(max_length=200, blank=True, null=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    is_elective = models.BooleanField(default=False, blank=True, null=True)
-
-    objects = CourseManager()
-
-    def __str__(self):
-        return "{0} ({1})".format(self.title, self.code)
-
-    def get_absolute_url(self):
-        return reverse('course_detail', kwargs={'slug': self.slug})
-
-
-def course_pre_save_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = unique_slug_generator(instance)
-
-pre_save.connect(course_pre_save_receiver, sender=Course)
 
 
 class CourseAllocation(models.Model):
     lecturer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='allocated_lecturer')
-    courses = models.ManyToManyField(Course, related_name='allocated_course')
+    courses = models.ManyToManyField(Group, related_name='allocated_course')
 
     def __str__(self):
         return self.lecturer.get_full_name
@@ -85,7 +51,7 @@ class CourseAllocation(models.Model):
 
 class Upload(models.Model):
     title = models.CharField(max_length=100)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Group, on_delete=models.CASCADE)
     file = models.FileField(upload_to='course_files/', validators=[FileExtensionValidator(['pdf', 'docx', 'doc', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7zip'])])
     updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
     upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
