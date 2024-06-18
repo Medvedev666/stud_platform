@@ -129,7 +129,7 @@ def profile_single(request, id):
 @login_required
 @admin_required
 def admin_panel(request):
-    return render(request, "setting/admin_panel.html", {})
+    return render(request, "setting/admin_panel.html", {'title': 'Панель администратора'})
 
 @login_required
 @admin_required
@@ -203,7 +203,7 @@ def staff_add_view(request):
             form.save()
             messages.success(
                 request,
-                "Профиль для руководителя "
+                "Профиль для преподавателя "
                 + first_name
                 + " "
                 + father_name
@@ -214,7 +214,7 @@ def staff_add_view(request):
         form = StaffAddForm()
 
     context = {
-        "title": "Добавить руководителя",
+        "title": "Добавить преподавателя",
         "form": form,
     }
 
@@ -231,7 +231,7 @@ def edit_staff(request, pk):
         if form.is_valid():
             form.save()
 
-            messages.success(request, "Руководитель " + full_name + " был обновлен.")
+            messages.success(request, "Преподаватель " + full_name + " был обновлен.")
             return redirect("lecturer_list")
         else:
             messages.error(request, "Пожалуйста исправьте ошибки ниже.")
@@ -241,7 +241,7 @@ def edit_staff(request, pk):
         request,
         "accounts/edit_lecturer.html",
         {
-            "title": "Редактировать руководителя",
+            "title": "Редактировать преподавателя",
             "form": form,
         },
     )
@@ -255,7 +255,7 @@ class LecturerListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Руководители"
+        context["title"] = "Преподаватели"
         return context
 
 
@@ -265,7 +265,7 @@ def delete_staff(request, pk):
     lecturer = get_object_or_404(User, pk=pk)
     full_name = lecturer.get_full_name
     lecturer.delete()
-    messages.success(request, "Руководитель " + full_name + " был удален.")
+    messages.success(request, "Преподаватель " + full_name + " был удален.")
     return redirect("lecturer_list")
 
 
@@ -292,7 +292,7 @@ def student_add_view(request):
     return render(
         request,
         "accounts/add_student.html",
-        {"title": "Добавить сотрудника", "form": form},
+        {"title": "Добавить обучающегося", "form": form},
     )
 
 
@@ -307,7 +307,7 @@ def edit_student(request, pk):
         if form.is_valid():
             form.save()
             student_form.save()
-            messages.success(request, ("Профиль сотрудника " + full_name + " был обновлен."))
+            messages.success(request, ("Профиль обучающегося " + full_name + " был обновлен."))
             return redirect("student_list")
         else:
             messages.error(request, "Пожалуйста, исправьте ошибку ниже.")
@@ -339,7 +339,7 @@ class StudentListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Сотрудники"
+        context["title"] = "Обучающиеся"
         return context
 
 
@@ -349,7 +349,7 @@ def delete_student(request, pk):
     student = get_object_or_404(Student, pk=pk)
     # full_name = student.user.get_full_name
     student.delete()
-    messages.success(request, "Сотрудник был удален.")
+    messages.success(request, "Обучающийся был удален.")
     return redirect("student_list")
 
 

@@ -30,23 +30,20 @@
 				<a href="{% url 'admin_panel' %}"><i class="fas fa-user-tie"></i>Панель администратора</a>
 			</li>
 			<li class="{% if request.path == lec %}active{% endif %}">
-				<a href="{% url 'lecturer_list' %}"><i class="fas fa-chalkboard-teacher"></i>Руководители</a>
+				<a href="{% url 'lecturer_list' %}"><i class="fas fa-chalkboard-teacher"></i>Преподаватели</a>
 			</li>
 			<li class="{% if request.path == stu %}active{% endif %}">
-				<a href="{% url 'student_list' %}"><i class="fas fa-user-graduate"></i>Сотрудники</a>
+				<a href="{% url 'student_list' %}"><i class="fas fa-user-graduate"></i>Обучающиеся</a>
 			</li>
 			{% endif %}
 
-			<!-- {% if request.user.is_lecturer %}
+			{% if request.user.is_lecturer %}
 			<li class="{% if request.path == ucl %}active{% endif %}">
-				<a href="{% url 'user_course_list' %}"><i class="fas fa-book"></i>Мои группы</a>
+				<a href="{% url 'user_course_list' %}"><i class="fas fa-book"></i>Группы</a>
 			</li>
-			{% endif %} -->
+			{% endif %}
 
 			{% if request.user.is_student %}
-			<!-- <li class="{% if request.path == ucl %}active{% endif %}">
-				<a href="{% url 'user_course_list' %}"><i class="fas fa-book"></i>Мои предметы</a>
-			</li> -->
 			<li class="{% if request.path == '/groups/' %}active{% endif %}">
 				<a href="{% url 'groups' %}"><i class="fas fa-book-open"></i>Моя группа</a>
 			</li>
@@ -58,20 +55,23 @@
 			</li>
 			{% endif %}
 
-			{% if request.user.is_lecturer or user.is_superuser %}
+			{% if user.is_superuser %}
 			<li class="{% if request.path == '/groups/' %}active{% endif %}">
-				<a href="{% url 'groups' %}"><i class="fas fa-book-open"></i>Группы и предметы</a>
+				<a href="{% url 'groups' %}"><i class="fas fa-book-open"></i>Группы</a>
 			</li>
+			{% endif %}
+
+			{% if request.user.is_lecturer or user.is_superuser %}
 			<li class="{% if request.path == '/groups/show_stud_result/' %}active{% endif %}">
 				<a href="{% url 'show_stud_result' %}"><i class="fas fa-list"></i>Отчёт</a>
 			</li>
 			{% endif %}
 
-			<!-- {% if request.user.is_superuser %}
+			{% if request.user.is_superuser %}
 			<li class="{% if request.path == cav %}active{% endif %}">
-				<a href="#"><i class="fas fa-tasks"></i>Распределение курсов</a>
+				<a href="{% url 'course_allocation_view' %}"><i class="fas fa-tasks"></i>Распределение групп</a>
 			</li>
-			{% endif %} -->
+			{% endif %}
 
 
 			<br />

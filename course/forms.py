@@ -3,7 +3,11 @@ from django.db import transaction
 from django.conf import settings
 from django.utils import timezone
 
-from .models import Group, Upload, AddStudTask, Comments
+from .models import (
+    Group, Upload, AddStudTask, Comments,
+    CourseAllocation
+)
+from accounts.models import User
 
 
 
@@ -56,3 +60,46 @@ class CommentsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['messages'].widget.attrs.update({'class': 'form-control'})
+
+class CourseAllocationForm(forms.ModelForm):
+    courses = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'browser-default checkbox'}),
+        required=True
+    )
+    lecturer = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_lecturer=True),
+        widget=forms.Select(attrs={'class': 'browser-default custom-select'}),
+        label="lecturer",
+    )
+
+    class Meta:
+        model = CourseAllocation
+        fields = ['lecturer', 'courses']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(CourseAllocationForm, self).__init__(*args, **kwargs)
+        self.fields['lecturer'].queryset = User.objects.filter(is_lecturer=True)
+
+
+class EditCourseAllocationForm(forms.ModelForm):
+    courses = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+    lecturer = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_lecturer=True),
+        widget=forms.Select(attrs={'class': 'browser-default custom-select'}),
+        label="lecturer",
+    )
+
+    class Meta:
+        model = CourseAllocation
+        fields = ['lecturer', 'courses']
+
+    def __init__(self, *args, **kwargs):
+        #    user = kwargs.pop('user')
+        super(EditCourseAllocationForm, self).__init__(*args, **kwargs)
+        self.fields['lecturer'].queryset = User.objects.filter(is_lecturer=True)

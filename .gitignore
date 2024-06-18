@@ -6,3 +6,5 @@ media/course_files/
 media/profile_pictures/
 media/student_files/
 requirements/
+gunicorn2.service
+project2

@@ -1,5 +1,5 @@
 {% extends 'registration/registration_base.html' %}
-{% block title %}{{title}}{% endblock title %}
+{% block title %}Вход{% endblock title %}
 {% load crispy_forms_tags %}
 {% block content %}
 
@@ -33,7 +33,7 @@
   $('#login-form').submit(function (e) {
     // e.preventDefault();
     $('#login-btn').addClass('disabled')
-    $('#login-btn').html(`<i class="fas fa-sign-in-alt"></i> Signining you in . . .`)
+    $('#login-btn').html(`<i class="fas fa-sign-in-alt"></i> Входим в аккаунт . . .`)
   })
 
   $("#username").on("input", function () {

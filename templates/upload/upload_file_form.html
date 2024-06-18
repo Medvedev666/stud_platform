@@ -9,7 +9,7 @@
      <a href="{% url 'group_detail' course.pk %}" class="primary1"> {{ course.group }}</a>  
        Загрузка файлов</div>
 
-<p class="title-1">Загрузка файлов для {{ course }}</p>
+<p class="title-1">Загрузка файлов для <span style="text-transform: lowercase;">{{ course }}</span></p>
 <div class="title-line"></div><br>
 
 {% if messages %}
@@ -34,14 +34,14 @@
         <div class="container">
             
             <div class="form-group">
-                <b>File Name</b>{{ form.title }}
+                <b>Тема</b>{{ form.title }}
                 <span class="danger">{{ form.title.errors }}</span>
             </div>
             <div class="form-group">
-                <b>File</b><br>{{ form.file }}
+                <b>Файл</b><br>{{ form.file }}
                 <span class="danger">{{ form.file.errors }}</span>
             </div>
-            <p class="text-orange"><b>Valid Files: </b>pdf, docx, doc, xls, xlsx, ppt, pptx, zip, rar, 7zip</p>
+            <p class="text-orange"><b>Допустимые расширения: </b>pdf, docx, doc, xls, xlsx, ppt, pptx, zip, rar, 7zip</p>
             <div class="form-group">
                 <select hidden name="course" required="" id="id_course">
                     <option value="{{ course.pk }}" selected>{{ course }}</option>

@@ -14,7 +14,8 @@ from accounts.models import User, Student
 from accounts.decorators import lecturer_required, student_required
 from .forms import (
     GroupForm, UploadFormFile,
-    AddStudTaskForm, CommentsForm
+    AddStudTaskForm, CommentsForm,
+    CourseAllocationForm, EditCourseAllocationForm
 )
 from .models import (
     Group, CourseAllocation, 
@@ -84,6 +85,20 @@ def group_detail(request, pk):
             'title': group.title,
             'group': group, 
             'courses': courses, 
+        }, )
+    elif request.user.is_lecturer:
+        students = Student.objects.filter(department=group)
+        if CourseAllocation.objects.filter(courses=pk, lecturer=request.user).exists():
+            chek = True
+        else:
+            chek = False
+        
+        return render(request, 'course/group_single.html', {
+            'title': group.title,
+            'group': group, 
+            'courses': courses, 
+            'chek': chek,
+            'students': students,
         }, )
     else:
         students = Student.objects.filter(department=group)
@@ -192,6 +207,7 @@ def handle_file_delete(request, pk, file_id):
 
 @login_required
 def user_course_list(request):
+    title = 'Мои группы'
     if request.user.is_lecturer:
         courses = Group.objects.filter(allocated_course__lecturer__pk=request.user.id)
 
@@ -206,31 +222,23 @@ def user_course_list(request):
             courses = allocation.courses.all()
 
             for course in courses:
-                group = course.group
+                group = course
 
                 if group not in lecturer_groups:
                     lecturer_groups.append(group)
 
         context = {
+            'title': title,
             'courses': courses,
             'groups': lecturer_groups
         }
         return render(request, 'course/user_course_list.html', context)
 
-    elif request.user.is_student:       
-        student = Student.objects.get(student__pk=request.user.id)
-        if student.department_id == None:
-            context = {"student": student,}
-            return render(request, 'course/user_course_list.html', context)
-        else:
-            courses = Group.objects.filter(pk=student.department.id)
-
-            return render(request, 'course/user_course_list.html', {
-                'student': student,
-                'courses': courses
-            })
+    elif request.user.is_student:
+        return redirect('groups')
     else:
-        return render(request, 'course/user_course_list.html')
+        title = 'Группы'
+        return render(request, 'course/user_course_list.html', {'title': title})
 
 @login_required
 def submitted_assignments(request, pk):
@@ -457,6 +465,7 @@ def show_stud_result(request):
             ball = calculate_average(grades)
 
             context = {
+                'title': title,
                 'exercises': formatted_exercises,
                 # 'groups': groups,
                 'tasks': tasks,
@@ -464,6 +473,7 @@ def show_stud_result(request):
             }
         else:
             context = {
+                'title': title,
                 'exercises': formatted_exercises,
                 # 'groups': groups,
                 'tasks': None,
@@ -473,7 +483,7 @@ def show_stud_result(request):
         return render(request, 'course/show_stud_result.html', context)
     
 def all_students_for_task(request, pk, task_pk):
-    title = 'Выбор сотрудника'
+    title = 'Выбор обучающегося'
     
     if request.user.is_student:
         return render('group')
@@ -550,3 +560,74 @@ def comment_edit(request, pk, task_id, comment_id):
         'group_pk': pk,
         'task': task
     })
+
+
+@method_decorator([login_required], name='dispatch')
+class CourseAllocationFormView(CreateView):
+    form_class = CourseAllocationForm
+    template_name = 'course/course_allocation_form.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(CourseAllocationFormView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        # if a staff has been allocated a course before update it else create new
+        lecturer = form.cleaned_data['lecturer']
+        selected_courses = form.cleaned_data['courses']
+        courses = ()
+        for course in selected_courses:
+            courses += (course.pk,)
+        # print(courses)
+
+        try:
+            a = CourseAllocation.objects.get(lecturer=lecturer)
+        except:
+            a = CourseAllocation.objects.create(lecturer=lecturer)
+        for i in range(0, selected_courses.count()):
+            a.courses.add(courses[i])
+            a.save()
+        return redirect('course_allocation_view')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Распределение курсов"
+        return context
+
+
+@login_required
+def course_allocation_view(request):
+    allocated_courses = CourseAllocation.objects.all()
+    return render(request, 'course/course_allocation_view.html', {
+        'title': "Распределение курсов",
+        "allocated_courses": allocated_courses
+    })
+
+
+@login_required
+@lecturer_required
+def edit_allocated_course(request, pk):
+    allocated = get_object_or_404(CourseAllocation, pk=pk)
+    if request.method == 'POST':
+        form = EditCourseAllocationForm(request.POST, instance=allocated)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'назначенный курс обновлен.')
+            return redirect('course_allocation_view')
+    else:
+        form = EditCourseAllocationForm(instance=allocated)
+
+    return render(request, 'course/course_allocation_form.html', {
+        'title': "Распределение курсов",
+        'form': form, 'allocated': pk
+    }, )
+
+
+@login_required
+@lecturer_required
+def deallocate_course(request, pk):
+    course = CourseAllocation.objects.get(pk=pk)
+    course.delete()
+    messages.success(request, 'курс успешно удален!')
+    return redirect("course_allocation_view")

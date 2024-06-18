@@ -3,11 +3,11 @@
 
 {% block content %}
 
-<div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a>  Руководители</div>
+<div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a>  Преподаватели</div>
 
 
 
-<p class="title-1"><i class="fas fa-chalkboard-teacher"></i>Список руководителей</p>
+<p class="title-1"><i class="fas fa-chalkboard-teacher"></i>Список преподавателей</p>
 <div class="title-line"></div>
 
 {% if messages %}
@@ -36,7 +36,7 @@
 </div> -->
 <div class="content-center" style="align-items: center;">
     {% if request.user.is_superuser %}
-    <a class="add-button" href="{% url 'add_lecturer' %}"><i class="fas fa-plus"></i>Добавить руководителя</a>
+    <a class="add-button" href="{% url 'add_lecturer' %}"><i class="fas fa-plus"></i>Добавить преподавателя</a>
     {% endif %}
     <form class="search-form" action="" method="GET">
         <input class="au-input" type="text" name="name" placeholder="ФИО" value="{{ request.GET.name }}" />
@@ -51,7 +51,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>#</th>
+                <th></th>
                 <th> Логин </th>
                 <th> ФИО </th>
                 <th> Почта </th>
@@ -87,11 +87,11 @@
                   <td></td>
                   <td>
                   <span class="text-danger">
-                    <i class="far fa-frown"></i>Нет руководителей.
+                    <i class="far fa-frown"></i>Нет преподавателей.
                     {% if request.user.is_superuser %}
                     <a href="{% url 'add_lecturer' %}">
                     <i class="primary" style="font-size: 22px;">
-                       Добавить руководителя.
+                       Добавить преподавателя.
                     </i>
                     {% endif %}
                     </a>

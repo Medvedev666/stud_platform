@@ -5,9 +5,9 @@
 
 {% block content %}
 <div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a>  
-    <a href="{% url 'lecturer_list' %}" class="primary1">Руководители</a>  Добавить</div>
+    <a href="{% url 'lecturer_list' %}" class="primary1">Преподаватели</a>  Добавить</div>
 <br>
-<div class="title-1"><i class="fas fa-chalkboard-teacher"></i>Добавление руководителя</div>
+<div class="title-1"><i class="fas fa-chalkboard-teacher"></i>Добавление преподавателя</div>
 <div class="title-line"></div><br>
 
 {% if messages %}
@@ -81,7 +81,7 @@
             </div>
         </div>
     </div>
-    <center><input class="btn btn-outline-primary" type="submit" value="Save"></center>
+    <center><input class="btn btn-outline-primary" type="submit" value="Сохранить"></center>
 </form>
 
 {% endblock content %}

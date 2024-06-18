@@ -30,10 +30,10 @@
 					<p class="container text-muted-xs text-center">
 						Последний вход: {{ request.user.last_login|date:"d.m.Y" }}</p>
 
-					{% if request.user.is_lecturer or request.user.is_student %}
+					<!-- {% if request.user.is_lecturer %}
 					<a class="dropdown-item" href="{% url 'user_course_list' %}"><i class="fas fa-book"></i>Мои 
-						Группы</a>
-					{% endif %}
+						группы</a>
+					{% endif %} -->
 
 					{% if request.user.is_superuser %}
 					<a class="dropdown-item" href="{% url 'admin_panel' %}"><i class="fas fa-user-tie"></i>Админ

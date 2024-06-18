@@ -27,7 +27,7 @@ urlpatterns = [
     path('course/<int:pk>/documentations/<int:file_id>/edit/', handle_file_edit, name='upload_file_edit'),
     path('course/<int:pk>/documentations/<int:file_id>/delete/', handle_file_delete, name='upload_file_delete'),
 
-    path('my_courses/', user_course_list, name="user_course_list"),
+    path('my_groups/', user_course_list, name="user_course_list"),
 
     # назначение курса сотруднику
     path('course/show_assignments/<int:pk>', submitted_assignments, name="assignments"),
@@ -44,4 +44,10 @@ urlpatterns = [
     # оставить комментарий
     path('<int:pk>/create_comment/<int:task_id>', add_comment, name="create_comment"),
     path('<int:pk>/comment_edit/<int:task_id>/comment/<int:comment_id>', comment_edit, name="comment_edit"),
+
+    # CourseAllocation urls
+    path('course/assign/', CourseAllocationFormView.as_view(), name='course_allocation'),
+    path('course/allocated/', course_allocation_view, name='course_allocation_view'),
+    path('allocated_course/<int:pk>/edit/', edit_allocated_course, name='edit_allocated_course'),
+    path('course/<int:pk>/deallocate/', deallocate_course, name='course_deallocate'),
 ]

@@ -54,14 +54,14 @@
                 <table class="table table-shadow table-light table-striped m-0">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th></th>
                             <th>Название</th>
                             <th>Дата загрузки</th>
                             <th>Дата обновления</th>
                             <th>Скачать</th>
                             {% if request.user.is_superuser or request.user.is_lecturer %}
                             <th>Действия</th>
-                            <th>Отправить сотруднику</th>
+                            <th>Отправить обучающемуся</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -150,7 +150,7 @@
 </div>
 
 <div class="site-section">
-    <div class="title-1">Руководители</div>
+    <div class="title-1">Преподаватели</div>
     <br>
     <div class="container marketing">
         <div class="row">

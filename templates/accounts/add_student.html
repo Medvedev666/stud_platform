@@ -2,12 +2,13 @@
 {% block title %}{{ title }}{% endblock title %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div id="input-nav"><a href="{% url 'home' %}" class="primary1">Главная</a>  
-    <a href="{% url 'student_list' %}" class="primary1">Сотрудники</a>  Добавить</div>
+    <a href="{% url 'student_list' %}" class="primary1">Обучающиеся</a>  Добавить</div>
 <br>
-<div class="title-1"><i class="fas fa-user-graduate"></i>Добавление сотрудника</div>
+<div class="title-1"><i class="fas fa-user-graduate"></i>Добавление обучающегося</div>
 <div class="title-line"></div><br>
 
 {% if messages %}
@@ -90,7 +91,7 @@
             </div>
         </div>
     </div>
-    <center><input class="btn btn-outline-primary" type="submit" value="Save"></center>
+    <center><input class="btn btn-outline-primary" type="submit" value="Сохранить"></center>
 </form>
 
 {% endblock content %}
