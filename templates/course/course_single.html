@@ -72,7 +72,7 @@
                             <td><a href="{{ file.file.url }}" title="{{ file }}">
                                     <i style="font-size: 20px; padding-right: 10px;"
                                         class="fas fa-file-{{ file.get_extension_short }}"></i>
-                                    {{ file.title|title }}
+                                    {{ file.title }}
                                 </a>
                             </td>
                             <td>{{ file.upload_time|date:"d.m.Y" }}</td>
@@ -159,7 +159,7 @@
                 {% if lecturer.lecturer.picture %}
                 <img class="" src="{{ lecturer.lecturer.picture.url }}" alt="" style="width:140px;">
                 {% endif %}
-                <h2>{{ lecturer|title }}</h2>
+                <h2>{{ lecturer }}</h2>
                 <p style="color: #6c757d;">{{ lecturer.lecturer.email }}</p>
             </div>
             {% endfor %}

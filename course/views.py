@@ -69,7 +69,7 @@ def group_add(request):
 
 @login_required
 def group_detail(request, pk):
-    print(f'{pk=}')
+
     group = Group.objects.get(pk=pk)
     courses = Upload.objects.filter(course__pk=pk).order_by('title')
 
