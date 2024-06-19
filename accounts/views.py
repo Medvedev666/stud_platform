@@ -251,7 +251,7 @@ def edit_staff(request, pk):
 class LecturerListView(ListView):
     queryset = User.objects.filter(is_lecturer=True)
     template_name = "accounts/lecturer_list.html"
-    paginate_by = 10  # if pagination is desired
+    # paginate_by = 10  # if pagination is desired
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -328,7 +328,7 @@ def edit_student(request, pk):
 @method_decorator([login_required, admin_required], name="dispatch")
 class StudentListView(ListView):
     template_name = "accounts/student_list.html"
-    paginate_by = 10  # if pagination is desired
+    # paginate_by = 10  # if pagination is desired
 
     def get_queryset(self):
         queryset = Student.objects.all()
